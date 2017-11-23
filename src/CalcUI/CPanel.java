@@ -6,7 +6,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
+import javax.ejb.AsyncResult;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -87,15 +89,20 @@ public class CPanel extends JPanel
 	        {
 	        	int b = Integer.valueOf(text_field.getText());
 				try {
-					text_field.setText(CalcAPI.Calc(a,b,op));
+					String result = CalcAPI.Calc(a,b,op);
+					text_field.setText(new AsyncResult<String>(result).get());
 				} catch (ClientProtocolException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				} catch (ExecutionException e1) {
+					e1.printStackTrace();
 				}
-	        }
+			}
 	        else
 	        {
 	        	int num = Integer.valueOf(caption);

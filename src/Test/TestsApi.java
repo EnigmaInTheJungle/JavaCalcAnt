@@ -4,6 +4,8 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import org.apache.http.client.ClientProtocolException;
 import org.junit.Test;
@@ -12,6 +14,8 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import CalcLogic.CalcAPI;
+import javax.ejb.AsyncResult;
+import javax.ejb.Asynchronous;
 
 @RunWith(Parameterized.class)
 public class TestsApi
@@ -34,16 +38,18 @@ public class TestsApi
     @Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
-                {2, 3, "+", "5"},
                 {4, 5, "-", "-1"},
                 {6, 7, "*", "42"},
-                {8, 4, "/", "2"}
+                {8, 4, "/", "2"},
+                {2, 3, "+", "5"}
         });
     }
 
     @Test
-	public void testCalc() throws ClientProtocolException, IOException 
-	{	
-		assertEquals(expected, CalcAPI.Calc(numberA, numberB, op));
+    @Asynchronous
+	public void testCalc() throws IOException, ExecutionException, InterruptedException {
+        String result = CalcAPI.Calc(numberA, numberB, op);
+        String assertionResult = new AsyncResult<String>(result).get();
+		assertEquals(expected, assertionResult);
 	}          
 }
